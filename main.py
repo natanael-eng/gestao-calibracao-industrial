@@ -2,7 +2,7 @@ import sqlite3
 from datetime import datetime, timedelta
 
 # Configuração de e-mails fictícios para os responsáveis
-RESPONSAVEIS = ["gestao.manutencao@exemplo.com", "oficina.eletrica@exemplo.com"]
+RESPONSAVEIS = ["liranatan45@gmail.com", "oficina.eletrica@exemplo.com"]
 
 def inicializar_banco():
     conn = sqlite3.connect('ferramentas.db')
