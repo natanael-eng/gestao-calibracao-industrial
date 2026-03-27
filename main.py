@@ -21,10 +21,10 @@ def inicializar_banco():
     cursor.execute("SELECT count(*) FROM equipamentos")
     if cursor.fetchone()[0] == 0:
         ferramentas = [
-            ('Multímetro Fluke', '2025-01-10', 12, RESPONSAVEIS[0]),
-            ('Megômetro', '2024-06-15', 12, RESPONSAVEIS[1]),
+            ('Multímetro Fluke', '2025-05-15', 12, RESPONSAVEIS[0]), # Vence em 2 meses!
+            ('Megômetro', '2025-01-15', 12, RESPONSAVEIS[1]),        # Já venceu!
             ('Comunicador HART', '2025-03-01', 24, RESPONSAVEIS[0]),
-            ('Medidor Portátil de Vazão', '2024-08-20', 12, RESPONSAVEIS[1]),
+            ('Medidor Portátil de Vazão', '2025-04-20', 12, RESPONSAVEIS[1]),
             ('Terrômetro', '2025-02-15', 12, RESPONSAVEIS[0])
         ]
         cursor.executemany('INSERT INTO equipamentos (nome, ultima_calibracao, periodicidade_meses, responsavel_email) VALUES (?,?,?,?)', ferramentas)
