@@ -3,7 +3,7 @@ name: Verificação Semanal de Calibração
 on:
   push: # Roda sempre que você mudar o código
   schedule:
-    - cron: '0 0 * * 1' # Roda automaticamente toda segunda-feira à meia-noite
+    - cron: '0 12 * * *' # Roda todo dia ao meio-dia (horário de Brasília aprox.)
 
 jobs:
   verificacao:
