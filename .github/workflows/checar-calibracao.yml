@@ -1,0 +1,21 @@
+name: Verificação Semanal de Calibração
+
+on:
+  push: # Roda sempre que você mudar o código
+  schedule:
+    - cron: '0 0 * * 1' # Roda automaticamente toda segunda-feira à meia-noite
+
+jobs:
+  verificacao:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Executar Checagem de Datas
+        run: python main.py
