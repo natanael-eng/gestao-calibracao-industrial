@@ -19,3 +19,6 @@ jobs:
 
       - name: Executar Checagem de Datas
         run: python main.py
+        env:
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          USER_EMAIL: liranatan45@gmail.com
