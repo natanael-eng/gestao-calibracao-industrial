@@ -50,8 +50,8 @@ def inicializar_banco():
     if cursor.fetchone()[0] == 0:
         # Exemplo com TAGs padrão Alcoa
         ferramentas = [
-            ('MT-001', 'Multímetro Fluke', '2025-05-25', 12, 'liranatan45@gmail.com'),
-            ('MG-005', 'Megômetro', '2025-05-10', 12, 'liranatan45@gmail.com'),
+            ('MT-001', 'Multímetro Fluke', '2025-05-25', 12, 'liranatan45@gmail.com')
+            ('MG-005', 'Megômetro', '2025-05-10', 12, 'liranatan45@gmail.com')
             ('HT-010', 'Comunicador HART', '2024-06-01', 24, 'liranatan45@gmail.com')
         ]
         cursor.executemany('INSERT INTO equipamentos (tag, nome, ultima_calibracao, periodicidade_meses, responsavel_email) VALUES (?,?,?,?,?)', ferramentas)
