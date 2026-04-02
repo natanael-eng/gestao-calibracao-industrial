@@ -34,7 +34,8 @@ def enviar_email(equipamento, tag, status, dias_restantes, destino):
 def inicializar_banco():
     conn = sqlite3.connect('ferramentas.db')
     cursor = conn.cursor()
-    # Adicionando a coluna TAG
+    
+    # CORREÇÃO DA LINHA 38: Removida a vírgula antes do fechar parêntese
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS equipamentos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,18 +44,24 @@ def inicializar_banco():
             ultima_calibracao DATE NOT NULL,
             periodicidade_meses INTEGER NOT NULL,
             responsavel_email TEXT,
+            email2 TEXT,
+            email3 TEXT
         )
     ''')
-    
+
     cursor.execute("SELECT count(*) FROM equipamentos")
     if cursor.fetchone()[0] == 0:
-        # Exemplo com TAGs padrão Alcoa
+        # CORREÇÃO DA LINHA 53: Espaço adicionado para evitar o erro de 'tuple'
         ferramentas = [
-            ('MT-001', 'Multímetro Fluke', '2025-05-25', 12, 'liranatan45@gmail.com')
-            ('MG-005', 'Megômetro', '2025-05-10', 12, 'liranatan45@gmail.com')
-            ('HT-010', 'Comunicador HART', '2024-06-01', 24, 'liranatan45@gmail.com')
+            ('MT-001', 'Multímetro Fluke', '2025-05-25', 12, 'liranatan45@gmail.com', 'erivane.silva@alcoa.com', 'thiagovasconcelos.info@gmail.com'),
+            ('MG-005', 'Megômetro', '2025-05-10', 12, 'liranatan45@gmail.com', 'erivane.silva@alcoa.com', 'thiagovasconcelos.info@gmail.com'),
+            ('HT-010', 'Comunicador HART', '2024-06-01', 24, 'liranatan45@gmail.com', 'erivane.silva@alcoa.com', 'thiagovasconcelos.info@gmail.com')
         ]
-        cursor.executemany('INSERT INTO equipamentos (tag, nome, ultima_calibracao, periodicidade_meses, responsavel_email) VALUES (?,?,?,?,?)', ferramentas)
+        
+        # CORREÇÃO DA LINHA 59: 7 colunas, 7 interrogações e a vírgula antes de ferramentas
+        query = 'INSERT INTO equipamentos (tag, nome, ultima_calibracao, periodicidade_meses, responsavel_email, email2, email3) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        cursor.executemany(query, ferramentas)
+        
     conn.commit()
     return conn
 
