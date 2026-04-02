@@ -23,8 +23,12 @@ def enviar_email(equipamento, tag, status, dias_restantes, destino):
     
     msg.set_content(corpo)
     msg['Subject'] = f"🚨 [{tag}] Alerta de Calibração - {dias_restantes} dias"
+    
+    # CORREÇÃO: Nome do remetente alterado para "Gestão de Ativos"
     msg['From'] = f"Gestão de Ativos <{EMAIL_SENDER}>"
-    msg['To'] = destino
+    
+    # Suporta tanto um único e-mail quanto uma lista de e-mails
+    msg['To'] = ", ".join(destino) if isinstance(destino, list) else destino
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
@@ -35,7 +39,6 @@ def inicializar_banco():
     conn = sqlite3.connect('ferramentas.db')
     cursor = conn.cursor()
     
-    # CORREÇÃO DA LINHA 38: Removida a vírgula antes do fechar parêntese
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS equipamentos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,14 +54,12 @@ def inicializar_banco():
 
     cursor.execute("SELECT count(*) FROM equipamentos")
     if cursor.fetchone()[0] == 0:
-        # CORREÇÃO DA LINHA 53: Espaço adicionado para evitar o erro de 'tuple'
         ferramentas = [
             ('MT-001', 'Multímetro Fluke', '2025-05-25', 12, 'liranatan45@gmail.com', 'erivane.silva@alcoa.com', 'thiagovasconcelos.info@gmail.com'),
             ('MG-005', 'Megômetro', '2025-05-10', 12, 'liranatan45@gmail.com', 'erivane.silva@alcoa.com', 'thiagovasconcelos.info@gmail.com'),
             ('HT-010', 'Comunicador HART', '2024-06-01', 24, 'liranatan45@gmail.com', 'erivane.silva@alcoa.com', 'thiagovasconcelos.info@gmail.com')
         ]
         
-        # CORREÇÃO DA LINHA 59: 7 colunas, 7 interrogações e a vírgula antes de ferramentas
         query = 'INSERT INTO equipamentos (tag, nome, ultima_calibracao, periodicidade_meses, responsavel_email, email2, email3) VALUES (?, ?, ?, ?, ?, ?, ?)'
         cursor.executemany(query, ferramentas)
         
@@ -68,35 +69,31 @@ def inicializar_banco():
 def verificar_vencimentos(conn):
     cursor = conn.cursor()
     hoje = datetime.now()
-    dia_da_semana = hoje.weekday() # 0 = Segunda, 1 = Terça...
+    dia_da_semana = hoje.weekday() 
     
-    # Buscando as 3 colunas de e-mail
+    # CORREÇÃO: Buscando as 3 colunas de e-mail corretamente
     cursor.execute("SELECT tag, nome, ultima_calibracao, periodicidade_meses, responsavel_email, email2, email3 FROM equipamentos")
+    
     for tag, nome, ultima, periodicidade, e1, e2, e3 in cursor.fetchall():
-    # Criando uma lista com os e-mails (removendo vazios se houver)
+        # Criando a lista de destinatários sem espaços vazios
         destinatarios = [e for e in [e1, e2, e3] if e]
         
-    # ... (restante do seu código de cálculo de datas) ...
-        
-    # Na hora de chamar a função enviar_email, passe a lista de destinatários:
-        enviar_email(nome, tag, "ALERTA SEMANAL", dias_restantes, destinatarios)
         data_ultimo = datetime.strptime(ultima, '%Y-%m-%d')
         data_vencimento = data_ultimo + timedelta(days=periodicidade * 30)
         dias_restantes = (data_vencimento - hoje).days
         
-        # REGRA 1: Entre 60 e 31 dias -> Enviar apenas na Segunda-feira (Semanal)
+        # REGRA 1: Entre 60 e 31 dias -> Segunda-feira
         if 31 <= dias_restantes <= 60:
-            if dia_da_semana == 0: # Segunda-feira
-                enviar_email(nome, tag, "ALERTA SEMANAL", dias_restantes, email)
+            if dia_da_semana == 0: 
+                enviar_email(nome, tag, "ALERTA SEMANAL", dias_restantes, destinatarios)
         
-        # REGRA 2: Entre 1 e 30 dias -> Enviar a cada 2 dias (Dias pares de dias restantes)
+        # REGRA 2: Entre 1 e 30 dias -> A cada 2 dias
         elif 0 < dias_restantes <= 30:
-            if dias_restantes % 2 == 0: # Envia quando faltar 30, 28, 26... dias
-                enviar_email(nome, tag, "ALERTA CRÍTICO (2 DIAS)", dias_restantes, email)
+            if dias_restantes % 2 == 0: 
+                enviar_email(nome, tag, "ALERTA CRÍTICO (2 DIAS)", dias_restantes, destinatarios)
         
-        # Se dias_restantes <= 0, o alerta para de ser emitido conforme solicitado.
         elif dias_restantes <= 0:
-            print(f"ℹ️ {nome} ({tag}) já venceu. Alerta interrompido conforme regra de negócio.")
+            print(f"ℹ️ {nome} ({tag}) já venceu. Alerta interrompido.")
 
 if __name__ == "__main__":
     conexao = inicializar_banco()
