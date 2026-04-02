@@ -44,7 +44,7 @@ def inicializar_banco():
             periodicidade_meses INTEGER NOT NULL,
             responsavel_email TEXT,
             email2 TEXT,
-            email3 TEXT,
+            email3 TEXT
         )
     ''')
     
