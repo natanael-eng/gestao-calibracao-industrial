@@ -71,15 +71,15 @@ def verificar_vencimentos(conn):
     dia_da_semana = hoje.weekday() # 0 = Segunda, 1 = Terça...
     
     # Buscando as 3 colunas de e-mail
-cursor.execute("SELECT tag, nome, ultima_calibracao, periodicidade_meses, responsavel_email, email2, email3 FROM equipamentos")
-for tag, nome, ultima, periodicidade, e1, e2, e3 in cursor.fetchall():
+    cursor.execute("SELECT tag, nome, ultima_calibracao, periodicidade_meses, responsavel_email, email2, email3 FROM equipamentos")
+    for tag, nome, ultima, periodicidade, e1, e2, e3 in cursor.fetchall():
     # Criando uma lista com os e-mails (removendo vazios se houver)
-    destinatarios = [e for e in [e1, e2, e3] if e]
-    
+        destinatarios = [e for e in [e1, e2, e3] if e]
+        
     # ... (restante do seu código de cálculo de datas) ...
-
+        
     # Na hora de chamar a função enviar_email, passe a lista de destinatários:
-    enviar_email(nome, tag, "ALERTA SEMANAL", dias_restantes, destinatarios)
+        enviar_email(nome, tag, "ALERTA SEMANAL", dias_restantes, destinatarios)
         data_ultimo = datetime.strptime(ultima, '%Y-%m-%d')
         data_vencimento = data_ultimo + timedelta(days=periodicidade * 30)
         dias_restantes = (data_vencimento - hoje).days
